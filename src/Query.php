@@ -24,6 +24,8 @@ class Query{
 
 	private $joins = [];
 
+	private $multipleJoins = [];
+
 	private $wheres;
 
 	private $bindings = [];
@@ -172,6 +174,11 @@ class Query{
 		$this->joins[] = $join;
 	}
 
+    private function joinMultiple($type, $table, $joins){
+        $multipleJoin = new JoinMultipleClause($type, $table);
+        $multipleJoin->on($joins);
+        $this->multipleJoins[] = $multipleJoin;
+    }
 
 	public function andWhere($columnOrWhereInstance, $operator = '=', $value = null) {
 		if($columnOrWhereInstance instanceof WhereClause){
@@ -269,12 +276,22 @@ class Query{
 		return $this;
 	}
 
+    public function orderByRaw($order) {
+        $this->order = [];
+        $this->thenOrderByRaw($order);
+        return $this;
+    }
 
 	public function thenOrderBy($column, $order){
 		$order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
 		$this->order[] = "$column $order";
 		return $this;
 	}
+
+    public function thenOrderByRaw($order){
+        $this->order[] = $order;
+        return $this;
+    }
 
 	public function limit($limit){
 		$this->limit = max(0, (int) $limit);
