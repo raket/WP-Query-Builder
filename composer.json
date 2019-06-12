@@ -1,5 +1,5 @@
 {
-    "name": "stephenharris/wp-query-builder",
+    "name": "alen125/wp-query-builder",
     "description": "An expressive query builder for WordPress based on Laravel's Query Builder",
     "type": "library",
     "license": "GPL-3.0-or-later",
