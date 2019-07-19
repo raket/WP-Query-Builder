@@ -498,5 +498,14 @@ class Query{
 
 		return sprintf("LIMIT %d", $this->limit);
 	}
+	
+	/**
+	* Get from table
+	* @return mixed
+	*/
+	public function getTable()
+	{
+		return $this->table;
+	}
 
 }
