@@ -38,6 +38,8 @@ class Query{
 
 	private $groupBy;
 
+	private $having;
+
 	public function __construct($wpdb){
 		$this->db = $wpdb;
 		$this->wheres = new CompositeWhereClause();
@@ -308,6 +310,11 @@ class Query{
 		return $this;
 	}
 
+	public function havingRaw($having) {
+        $this->having = 'HAVING ' . $having;
+        return $this;
+    }
+
 	public function get(){
 		$sql = $this->buildSqlAndPrepare();
 		$results  = $this->db->get_results($sql);
@@ -420,7 +427,7 @@ class Query{
 		}
 
 		$sqlParts = array_filter([
-			$sql, $this->buildJoinSql(), $this->buildWhereSql(), $this->buildGroupBySql(),
+			$sql, $this->buildJoinSql(), $this->buildWhereSql(), $this->buildGroupBySql(), $this->buildHavingSql(),
 			$this->buildOrderBy(), $this->buildLimitOffset()
 		]);
 
@@ -478,6 +485,9 @@ class Query{
 		return sprintf("GROUP BY %s", $this->groupBy);
 	}
 
+	private function buildHavingSql() {
+        return sprintf($this->having);
+    }
 
 	private function buildOrderBy() {
 		if(count($this->order) === 0){
@@ -498,14 +508,14 @@ class Query{
 
 		return sprintf("LIMIT %d", $this->limit);
 	}
-	
-	/**
-	* Get from table
-	* @return mixed
-	*/
-	public function getTable()
-	{
-		return $this->table;
-	}
+
+    /**
+     * Get from table
+     * @return mixed
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
 
 }
