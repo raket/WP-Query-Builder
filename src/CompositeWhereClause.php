@@ -15,12 +15,20 @@ class CompositeWhereClause implements WhereClause {
 	}
 
 	public function andWhere(WhereClause $where){
-		$this->whereClauses[] = ['AND', $where];
+		$this->whereClauses[] = ['AND', $where, 'isRaw' => false];
 	}
 
 	public function orWhere(WhereClause $where){
-		$this->whereClauses[] = ['OR', $where];
+		$this->whereClauses[] = ['OR', $where, 'isRaw' => false];
 	}
+
+    public function orWhereRaw($where){
+        $this->whereClauses[] = ['OR', $where, 'isRaw' => true];
+    }
+
+    public function andWhereRaw($where){
+        $this->whereClauses[] = ['AND', $where, 'isRaw' => true];
+    }
 
 	public function buildSql() {
 
@@ -39,15 +47,18 @@ class CompositeWhereClause implements WhereClause {
 					$sql .= ' ' . $operator;
 			}
 
-			$whereClauseSql = $whereClause[1]->buildSql();
+			if ($whereClause['isRaw']) {
+                $sql .= ' ' . $whereClause[1];
+            } else {
+                $whereClauseSql = $whereClause[1]->buildSql();
 
-			if($whereClause[1] instanceof CompositeWhereClause){
-				$whereClauseSql = '(' . $whereClauseSql . ')';
-			}
+                if($whereClause[1] instanceof CompositeWhereClause){
+                    $whereClauseSql = '(' . $whereClauseSql . ')';
+                }
 
-			$sql .= ' ' . $whereClauseSql;
-			$this->bindings = array_merge($this->bindings, $whereClause[1]->getBindings());
-
+                $sql .= ' ' . $whereClauseSql;
+                $this->bindings = array_merge($this->bindings, $whereClause[1]->getBindings());
+            }
 		}
 
 		return trim($sql);
