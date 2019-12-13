@@ -261,6 +261,16 @@ class Query{
         return $this;
     }
 
+    /**
+     * @param string $column
+     * @param array $values
+     * @return $this
+     */
+    public function whereNotIn($column, $values) {
+        $this->wheres->andWhere(new WhereNotInClause($column,$values));
+        return $this;
+    }
+
     public function orderBy($table, $order){
         $this->order = [];
         $this->thenOrderBy($table, $order);
@@ -386,7 +396,7 @@ class Query{
         return $sql;
     }
 
-    private function buildSql(){
+    public function buildSql(){
         $sql = '';
 
         switch($this->type){
